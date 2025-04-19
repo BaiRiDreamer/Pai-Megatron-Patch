@@ -86,6 +86,28 @@ elif [ $FL = false ]; then
     export NVTE_FLASH_ATTN=0 NVTE_FUSED_ATTN=1
 fi
 
+# 根据环境变量配置WANDB
+if [ -n $[MEGATRON_WANDB_ENABLED] ]; then
+    WANDB_API_KEY=${WANDB_API_KEY}
+    WANDB_ENTITY=${WANDB_ENTITY}
+    WANDB_PROJECT=${WANDB_PROJECT}
+    WANDB_EXP_NAME=${WANDB_NAME}
+    WANDB_NOTES=${WANDB_NOTES}
+    WANDB_JOB_TYPE=${WANDB_JOB_TYPE}
+
+    # 判断上面的变量是否为空
+    if [ -z ${WANDB_API_KEY} ] || [ -z ${WANDB_ENTITY} ] || [ -z ${WANDB_PROJECT} ] || [ -z ${WANDB_EXP_NAME} ]; then
+        echo "Please set the WANDB_API_KEY, WANDB_ENTITY, WANDB_PROJECT, WANDB_EXP_NAME environment variables."
+        exit 1
+    fi
+    # 设置wandb配置
+    wandb_config=" \
+        --wandb-project ${WANDB_PROJECT} \
+        --wandb-exp-name ${WANDB_EXP_NAME} \
+        --wandb-save-dir ${OUTPUT_BASEPATH}/wandb \
+        "
+fi
+
 if [ $MODEL_SIZE = 0.5B ]; then
 
 NUM_LAYERS=24
@@ -421,7 +443,7 @@ megatron_options="  \
 
 run_cmd="torchrun $DISTRIBUTED_ARGS ../qwen2/pretrain_qwen.py
  ${megatron_options} ${dataset_option} ${pr_options} ${load_options} ${te_options} ${activation_checkpoint_options} \
- ${do_options} ${sp_options} ${gqa_options} ${offload_option} ${comm_overlap_option} ${sft_option}  ${tie_option} ${vp_options} ${packing_options}"
+ ${do_options} ${sp_options} ${gqa_options} ${offload_option} ${comm_overlap_option} ${sft_option}  ${tie_option} ${vp_options} ${packing_options} ${wandb_config}"
 
 echo ${run_cmd}
 eval ${run_cmd}

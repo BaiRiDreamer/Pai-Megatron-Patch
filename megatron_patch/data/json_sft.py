@@ -86,8 +86,14 @@ class JSONSFTDataset(torch.utils.data.Dataset):
         # print the random examples that have been decoded
         for idx, example in enumerate(random_examples):
             inputs, labels = example
-            decoded_inputs = self.tokenizer.decode(inputs, skip_special_tokens=False)
-            decoded_labels = self.tokenizer.decode(labels, skip_special_tokens=False)
+            try:
+                decoded_inputs = self.tokenizer.decode(inputs, skip_special_tokens=False)
+                decoded_labels = self.tokenizer.decode(labels, skip_special_tokens=False)
+            except AttributeError as e:
+                print_rank_0(f"AttributeError: {e}")
+                print_rank_0("This tokenizer does not have a decode method.")
+            except Exception as e:
+                print_rank_0(f"Error decoding example {idx+1}: {e}")
             print_rank_0("========================================")
             print_rank_0(f"Example {idx+1}:")
             print_rank_0("--------------------")

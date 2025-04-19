@@ -201,6 +201,9 @@ def build_tokenizer(args):
             def apply_chat_template(self, conversations):
                 return self.tokenizer.apply_chat_template(conversations)
             
+            def decode(self, token_ids, skip_special_tokens=False):
+                return self.tokenizer.decode(token_ids, skip_special_tokens=skip_special_tokens)
+            
             @property
             def vocab_size(self):
                 return len(self.tokenizer.encoder) + self.extra_vocab_size

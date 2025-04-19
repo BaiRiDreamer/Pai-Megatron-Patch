@@ -6,3 +6,5 @@ Bigcode-Evaluation-Harness*
 .vscode
 examples/deepseek_v2/ckpt-*
 examples/deepseek_v2/llm-dc/log/*
+examples/qwen2_5/llm-dc/wandb-config.sh
+examples/qwen2_5/ckpt-*
